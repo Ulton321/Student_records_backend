@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap" rel="stylesheet">
+    <title>Student Records</title>
+    <style>
+        /* General Styles */
+    body {
+        font-family: 'Pixelify Sans', sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(270deg, #f31f1f, #4CAF50, #2196F3);
+        background-size: 600% 600%;
+        color: #333;
+        line-height: 1.6;
+        animation: gradientAnimation 10s ease infinite;
+    }
+
+    @keyframes gradientAnimation {
+        0% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+        100% {
+            background-position: 0% 0%;
+        }
+    }
+        /* Container */
+        .container {
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 20px;
+        background: rgba(255, 253, 253, 0.1); /* White with 80% opacity */
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+        /* Header */
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #555;
+            margin-top: 30px;
+        }
+
+        /* Form Styles */
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 20px;
+        font-family: 'Pixelify Sans', sans-serif; /* Apply the font */
+    }
+
+    input, button {
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        width: 100%;
+        box-sizing: border-box;
+        font-family: 'Pixelify Sans', sans-serif; /* Apply the font */
+    }
+
+        input:focus {
+            border-color: #4CAF50;
+            outline: none;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Student List */
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            background: #f4f4f4;
+            margin: 10px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        li span {
+            font-weight: bold;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+
+            input, button {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Student Records</h1>
+
+        <!-- Form to Add a New Student -->
+        <form id="studentForm">
+            <input type="text" id="firstName" placeholder="First Name" required />
+            <input type="text" id="lastName" placeholder="Last Name" required />
+            <input type="email" id="email" placeholder="Email" required />
+            <input type="text" id="course" placeholder="Course" required />
+            <input type="date" id="enrolledDate" required />
+            <button type="submit">Add Student</button>
+        </form>
+
+        <!-- List of Students -->
+        <h2>All Students</h2>
+        <ul id="studentList"></ul>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/students';
+
+        // Fetch and display all students
+        const fetchStudents = async () => {
+            try {
+                const response = await fetch(API_URL);
+                const students = await response.json();
+                const studentList = document.getElementById('studentList');
+                studentList.innerHTML = '';
+                students.forEach(student => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <span>${student.firstName} ${student.lastName}</span>
+                        <span>${student.email} (${student.course})</span>
+                    `;
+                    studentList.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Error fetching students:', error);
+            }
+        };
+
+        // Add a new student
+        const addStudent = async (event) => {
+            event.preventDefault();
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('email').value;
+            const course = document.getElementById('course').value;
+            const enrolledDate = document.getElementById('enrolledDate').value;
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ firstName, lastName, email, course, enrolledDate })
+                });
+                if (response.ok) {
+                    fetchStudents(); // Refresh the student list
+                    document.getElementById('studentForm').reset(); // Clear the form
+                } else {
+                    console.error('Error adding student:', await response.text());
+                }
+            } catch (error) {
+                console.error('Error adding student:', error);
+            }
+        };
+
+        // Attach event listener to the form
+        document.getElementById('studentForm').addEventListener('submit', addStudent);
+
+        // Fetch students on page load
+        fetchStudents();
+    </script>
+</body>
+</html>
+
+
