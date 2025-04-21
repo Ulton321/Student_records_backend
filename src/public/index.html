@@ -7,42 +7,43 @@
     <title>Student Records</title>
     <style>
         /* General Styles */
-    body {
-        font-family: 'Pixelify Sans', sans-serif;
-        margin: 0;
-        padding: 0;
-        background: linear-gradient(270deg, #f31f1f, #4CAF50, #2196F3);
-        background-size: 600% 600%;
-        color: #333;
-        line-height: 1.6;
-        animation: gradientAnimation 10s ease infinite;
-    }
+        body {
+            font-family: 'Pixelify Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(270deg, #f31f1f, #4CAF50, #2196F3);
+            background-size: 600% 600%;
+            color: #333;
+            line-height: 1.6;
+            animation: gradientAnimation 10s ease infinite;
+        }
 
-    @keyframes gradientAnimation {
-        0% {
-            background-position: 0% 50%;
+        @keyframes gradientAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 0%;
+            }
         }
-        50% {
-            background-position: 100% 50%;
-        }
-        100% {
-            background-position: 0% 0%;
-        }
-    }
+
         /* Container */
         .container {
-        max-width: 800px;
-        margin: 50px auto;
-        padding: 20px;
-        background: rgba(255, 253, 253, 0.1); /* White with 80% opacity */
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: rgba(255, 253, 253, 0.1); /* White with 80% opacity */
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
 
         /* Header */
         h1 {
             text-align: center;
-            color: #4CAF50;
+            color: #ffffff;
             margin-bottom: 20px;
         }
 
@@ -52,23 +53,23 @@
         }
 
         /* Form Styles */
-    form {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        margin-bottom: 20px;
-        font-family: 'Pixelify Sans', sans-serif; /* Apply the font */
-    }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+            font-family: 'Pixelify Sans', sans-serif; /* Apply the font */
+        }
 
-    input, button {
-        padding: 10px;
-        font-size: 16px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        width: 100%;
-        box-sizing: border-box;
-        font-family: 'Pixelify Sans', sans-serif; /* Apply the font */
-    }
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+            font-family: 'Pixelify Sans', sans-serif; /* Apply the font */
+        }
 
         input:focus {
             border-color: #4CAF50;
@@ -85,7 +86,7 @@
         }
 
         button:hover {
-            background-color: #45a049;
+            background-color: #000000;
         }
 
         /* Student List */
@@ -109,6 +110,22 @@
             font-weight: bold;
         }
 
+
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 80px;
+            
+        }
+
+        .delete-btn:hover {
+            background-color: #d32f2f;
+        }
         /* Responsive Design */
         @media (max-width: 600px) {
             .container {
@@ -141,27 +158,35 @@
     </div>
 
     <script>
-        const API_URL = 'http://localhost:5000/students';
+
+        const API_URL = 'http://localhost:5000/api/students'; 
 
         // Fetch and display all students
-        const fetchStudents = async () => {
-            try {
-                const response = await fetch(API_URL);
-                const students = await response.json();
-                const studentList = document.getElementById('studentList');
-                studentList.innerHTML = '';
-                students.forEach(student => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `
-                        <span>${student.firstName} ${student.lastName}</span>
-                        <span>${student.email} (${student.course})</span>
-                    `;
-                    studentList.appendChild(li);
-                });
-            } catch (error) {
-                console.error('Error fetching students:', error);
-            }
-        };
+    const fetchStudents = async () => {
+    try {
+        const response = await fetch(API_URL);
+        const students = await response.json();
+        const studentList = document.getElementById('studentList');
+        studentList.innerHTML = '';
+        students.forEach(student => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <span>${student.firstName} ${student.lastName}</span>
+                <span>${student.email} (${student.course})</span>
+                <button class="delete-btn" data-id="${student.id || student._id}">Delete</button>
+            `;
+            studentList.appendChild(li);
+        });
+
+        // Attach delete event listeners to all delete buttons
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', deleteStudent);
+        });
+    } catch (error) {
+        console.error('Error fetching students:', error);
+    }
+};
 
         // Add a new student
         const addStudent = async (event) => {
@@ -189,6 +214,28 @@
             }
         };
 
+
+        // Delete a student
+const deleteStudent = async (event) => {
+    const studentId = event.target.getAttribute('data-id');
+    console.log('Student ID:', studentId); // Debugging: Log the student ID
+    if (!studentId) {
+        console.error('Student ID is missing');
+        return;
+    }
+    try {
+        const response = await fetch(`${API_URL}/${studentId}`, {
+            method: 'DELETE'
+        });
+        if (response.ok) {
+            fetchStudents(); // Refresh the student list
+        } else {
+            console.error('Error deleting student:', await response.text());
+        }
+    } catch (error) {
+        console.error('Error deleting student:', error);
+    }
+};
         // Attach event listener to the form
         document.getElementById('studentForm').addEventListener('submit', addStudent);
 
@@ -197,5 +244,4 @@
     </script>
 </body>
 </html>
-
 

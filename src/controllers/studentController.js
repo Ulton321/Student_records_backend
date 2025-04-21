@@ -4,7 +4,15 @@ const Student = require('../models/studentModel');
 const getAllStudents = async (req, res) => {
     try {
         const students = await Student.find();
-        res.status(200).json(students);
+        const formattedStudents = students.map(student => ({
+            id: student._id, // Map _id to id
+            firstName: student.firstName,
+            lastName: student.lastName,
+            email: student.email,
+            course: student.course,
+            enrolledDate: student.enrolledDate
+        }));
+        res.status(200).json(formattedStudents);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching students', error });
     }
