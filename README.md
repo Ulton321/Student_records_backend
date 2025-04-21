@@ -62,4 +62,3 @@ npm test
 This project is licensed under the MIT License.
 =======
 # Student_records_backend
->>>>>>> 67c9f7e46bc20cf1e626a344e6250162f795fbf5
