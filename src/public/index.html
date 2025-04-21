@@ -110,6 +110,7 @@
             font-weight: bold;
         }
 
+
         .delete-btn {
             background-color: #f44336;
             color: white;
@@ -125,7 +126,6 @@
         .delete-btn:hover {
             background-color: #d32f2f;
         }
-
         /* Responsive Design */
         @media (max-width: 600px) {
             .container {
@@ -158,6 +158,7 @@
     </div>
 
     <script>
+
         const API_URL = 'http://localhost:5000/api/students'; 
 
         // Fetch and display all students
@@ -213,6 +214,7 @@
             }
         };
 
+
         // Delete a student
 const deleteStudent = async (event) => {
     const studentId = event.target.getAttribute('data-id');
@@ -234,7 +236,6 @@ const deleteStudent = async (event) => {
         console.error('Error deleting student:', error);
     }
 };
-
         // Attach event listener to the form
         document.getElementById('studentForm').addEventListener('submit', addStudent);
 
@@ -243,3 +244,4 @@ const deleteStudent = async (event) => {
     </script>
 </body>
 </html>
+
