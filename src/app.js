@@ -34,4 +34,4 @@ app.get('/', (req, res) => {
 });
 
 // Routes
-app.use('/students', studentRoutes);
+app.use('/api/students', studentRoutes); // Updated prefix to /api/students
